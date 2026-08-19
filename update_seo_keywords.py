@@ -1,12 +1,7 @@
-import os
-import re
-import random
-
-# ==========================================
-# 1. 영문 폴더/파일명 -> 한글 매핑 딕셔너리
-# ==========================================
 NAME_MAP = {
-    # 25개 구
+    # ---------------------------------------------------------
+    # [서울 25개 구 및 주요 동]
+    # ---------------------------------------------------------
     "gangnam": "강남구", "seocho": "서초구", "songpa": "송파구", "gangdong": "강동구",
     "mapo": "마포구", "yongsan": "용산구", "seodaemun": "서대문구", "eunpyeong": "은평구",
     "jongno": "종로구", "junggu": "중구", "jungnang": "중랑구", "seongbuk": "성북구",
@@ -14,9 +9,7 @@ NAME_MAP = {
     "gwangjin": "광진구", "dongdaemun": "동대문구", "yeongdeungpo": "영등포구",
     "guro": "구로구", "geumcheon": "금천구", "yangcheon": "양천구", "gangse": "강서구",
     "gangseo": "강서구", "dongjak": "동작구", "gwanak": "관악구",
-
-    # 주요 동 리스트 (필요 시 자유롭게 추가 가능)
-    "yeoksam": "역삼동", "nonhyeon": "논현동", "apgujeong": "압구정동", "cheongdam": "청담동", "samseong": "삼성동",
+    "yeoksam": "역삼동", "nonhyeon": "논현동", "apgujeong": "압구정", "cheongdam": "청담동", "samseong": "삼성동",
     "seocho_dong": "서초동", "banpo": "반포동", "bangbae": "방배동", "yangjae": "양재동", "jamwon": "잠원동",
     "jamsil": "잠실동", "garak": "가락동", "munjeong": "문정동", "bangi": "방이동", "ogeum": "오금동",
     "gongneung": "공릉동", "sanggye": "상계동", "junggye": "중계동", "hagye": "하계동", "wolgye": "월계동",
@@ -26,205 +19,69 @@ NAME_MAP = {
     "cheonho": "천호동", "gil": "길동", "amsa": "암사동", "myeongil": "명일동", "seongnae": "성내동",
     "mokdong": "목동", "sinjeong": "신정동", "hwagok": "화곡동", "magok": "마곡동", "guro_dong": "구로동",
     "sindorim": "신도림", "gasan": "가산동", "doksan": "독산동", "itaewon": "이태원", "hannam": "한남동",
-    "hyehwa": "혜화동", "myeongdong": "명동", "hoehyeon": "회현동", "sindang": "신당동"
+    "hyehwa": "혜화동", "myeongdong": "명동", "hoehyeon": "회현동", "sindang": "신당동",
+
+    # ---------------------------------------------------------
+    # [인천광역시 구 & 세부 동]
+    # ---------------------------------------------------------
+    "incheon_bupyeong": "인천 부평구", "bupyeong": "부평동", "sanggok": "산곡동", "cheongcheon": "청천동", "galsan": "갈산동", "sipjeong": "십정동", "bugae": "부개동", "samsan": "삼산동",
+    "incheon_namdong": "인천 남동구", "guwol": "구월동", "ganseok": "간석동", "mansu": "만수동", "nonhyeon": "논현동", "seochang": "서창동", "dorim": "도림동",
+    "incheon_yeonsu": "인천 연수구", "songdo": "송도동", "yeonsu": "연수동", "dongchun": "동춘동", "cheonghak": "청학동", "okryeon": "옥련동", "seonhak": "선학동",
+    "incheon_michuhol": "인천 미추홀구", "juan": "주안동", "yonghyeon": "용현동", "hakik": "학익동", "dohwa": "도화동", "sungui": "숭의동", "gwangyo": "관교동",
+    "incheon_seogu": "인천 서구", "cheongna": "청라동", "geomdan": "검단", "luwon": "루원시티", "gajeong": "가정동", "seoknam": "석남동", "yeonhui": "연희동", "dangha": "당하동", "majeon": "마전동",
+    "incheon_gyeyang": "인천 계양구", "gyeyang": "계양", "jakjeon": "작전동", "hyoseong": "효성동", "gyesan": "계산동", "seoun": "서운동",
+    "incheon_junggu": "인천 중구", "yeongjong": "영종도", "unseo": "운서동", "jungsan": "중산동", "sinpo": "신포동", "dongincheon": "동인천",
+    "incheon_donggu": "인천 동구", "songhyeon": "송현동", "songrim": "송림동", "manseok": "만석동", "hwasu": "화수동",
+
+    # ---------------------------------------------------------
+    # [경기도 시·구 & 세부 동]
+    # ---------------------------------------------------------
+    # 수원시 4개 구
+    "suwon_paldal": "수원 팔달구", "ingye": "인계동", "haenggung": "행궁동", "hwaseo": "화서동", "ji-dong": "지동", "maesan": "매산동",
+    "suwon_yeongtong": "수원 영통구", "gwanggyo": "광교", "yeongtong": "영통동", "mangpo": "망포동", "maetan": "매탄동", "woncheon": "원천동",
+    "suwon_jangan": "수원 장안구", "jeongja": "정자동", "jo-won": "조원동", "yuljeon": "율전동", "cheoncheon": "천천동", "yeonmu": "연무동",
+    "suwon_gwonseon": "수원 권선구", "gwonseon": "권선동", "gosaek": "고색동", "homaesil": "호매실동", "seriu": "세류동", "geumgok": "금곡동",
+
+    # 성남시 3개 구
+    "seongnam_bundang": "성남 분당구", "seohyeon": "서현동", "yatap": "야탑동", "pangyo": "판교", "baekhyeon": "백현동", "sunae": "수내동", "ime": "이매동", "gumi": "구미동", "unjoong": "운중동",
+    "seongnam_sujeong": "성남 수정구", "wirye": "위례", "sinheung": "신흥동", "taepyeong": "태평동", "sanseong": "산성동", "bokjeong": "복정동", "sujin": "수진동",
+    "seongnam_jungwon": "성남 중원구", "moran": "모란", "seongnam": "성남동", "sangdaewon": "상대원동", "hagdaewon": "하대원동", "geumgwang": "금광동", "bank": "은행동",
+
+    # 고양시 3개 구
+    "goyang_ilsandong": "고양 일산동구", "baekseok": "백석동", "madu": "마두동", "janghang": "장항동", "jeongbalsan": "정발산동", "siksa": "식사동", "pungsan": "풍산동",
+    "goyang_ilsanseo": "고양 일산서구", "juyeop": "주엽동", "daehwa": "대화동", "tanhyun": "탄현동", "ilsan": "일산동", "songsan": "송산동", "deogi": "덕이동",
+    "goyang_deogyang": "고양 덕양구", "hwajeong": "화정동", "haengsin": "행신동", "samsong": "삼송", "wonheung": "원흥", "hyangdong": "향동", "deogeun": "덕은", "wondang": "원당",
+
+    # 용인시 3개 구
+    "yongin_suji": "용인 수지구", "pungdeokcheon": "풍덕천동", "jookjeon": "죽전동", "dongcheon": "동천동", "sanghyeon": "상현동", "shinbong": "신봉동", "sungbok": "성복동",
+    "yongin_giheung": "용인 기흥구", "dongbaek": "동백동", "singal": "신갈동", "gugal": "구갈동", "bora": "보라동", "seonong": "서농동", "guseong": "구성", "mabuk": "마북동",
+    "yongin_cheoin": "용인 처인구", "kimryangjang": "김량장동", "yeokbuk": "역북동", "samga": "삼가동", "pogok": "포곡", "mohan": "모현", "yangji": "양지",
+
+    # 안양시 2개 구
+    "anyang_dongan": "안양 동안구", "pyeongchon": "평촌동", "beomgye": "범계", "indeogwon": "인덕원", "gwanyang": "관양동", "hogye": "호계동", "bisan": "비산동",
+    "anyang_manan": "안양 만안구", "anyang_dong": "안양동", "seoksu": "석수동", "bakdal": "박달동",
+
+    # 안산시 2개 구
+    "ansan_danwon": "안산 단원구", "gojan": "고잔동", "jungang": "중앙동", "chogi": "초지동", "wongok": "원곡동", "seonbu": "선부동", "daebu": "대부도",
+    "ansan_sangnok": "안산 상록구", "bono": "본오동", "sadong": "사동", "wolpi": "월피동", "seongpo": "성포동", "il-dong": "일동", "i-dong": "이동",
+
+    # 부천 / 화성 / 평택 / 시흥 / 김포 / 파주 / 남양주 / 의정부 / 하남 / 광명 / 군포 / 구리 등
+    "bucheon": "부천시", "jungdong": "중동", "sangdong": "상동", "sinjungdong": "신중동", "sosa": "소사동", "wonmi": "원미동", "ojeong": "오정동", "yeokgok": "역곡동", "gogang": "고강동",
+    "hwaseong": "화성시", "dongtan": "동탄1", "dongtan2": "동탄2", "byeongjeom": "병점", "hyangnam": "향남", "bongdam": "봉담", "namyang": "남양", "saesol": "새솔동", "jinjoo": "진안동",
+    "pyeongtaek": "평택시", "godeok": "고덕", "bijeon": "비전동", "songtan": "송탄", "anjeong": "안정리", "anseok": "안중", "poseung": "포승", "cheongbuk": "청북", "sejeong": "세교동",
+    "siheung": "시흥시", "baegot": "배곧동", "jeongwang": "정왕동", "eunhaeng": "은행동", "mokgam": "목감동", "daeya": "대야동", "sinhyeon": "신현동", "neunggok": "능곡동", "janghyeon": "장현동",
+    "gimpo": "김포시", "gurae": "구래동", "unyang": "운양동", "janggi": "장기동", "pungmu": "풍무동", "sau": "사우동", "masan": "마산동", "gochon": "고촌", "tongjin": "통진",
+    "paju": "파주시", "unjeong": "운정", "geumchon": "금촌동", "munsan": "문산", "gyoha": "교하", "yadang": "야당동", "dongpae": "동패동",
+    "namyangju": "남양주시", "dasang": "다산동", "byeolnae": "별내동", "pyeongnae": "평내동", "hopyeong": "호평동", "jinjeop": "진접", "wabu": "와부(덕소)", "onam": "오남", "hwado": "화도(마석)",
+    "uijeongbu": "의정부시", "uijeongbu_dong": "의정부동", "howon": "호원동", "singok": "신곡동", "minrak": "민락동", "gosan": "고산동", "ganeung": "가능동", "geumo": "금오동",
+    "hanam": "하남시", "misa": "미사", "wirye_hanam": "위례", "gamil": "감일", "deokpung": "덕풍동", "sinjang": "신장동", "pungcheon": "풍산동",
+    "gwangmyeong": "광명시", "cheolsan": "철산동", "gwangmyeong_dong": "광명동", "soha": "소하동", "iljik": "일직동(KTX광명역)", "haan": "하안동",
+    "gunpo": "군포시", "sanbon": "산본동", "geumjeong": "금정동", "dang-dong": "당동", "daeyami": "대야미", "bugok": "부곡동",
+    "guri": "구리시", "sutaek": "수택동", "inmae": "인창동", "galmae": "갈매동", "gyomun": "교문동", "achasan": "아천동",
+    "osan": "오산시", "won-dong": "원동", "seggyo": "세교", "궐동": "궐동", "osandong": "오산동", "eunjeong": "은계동",
+    "gwangju_gyeonggi": "경기 광주시", "gyeongan": "경안동", "taejeon": "태전동", "opocheup": "오포", "sinhyun": "신현동", "neungpyeong": "능평동", "tanbeol": "탄벌동",
+    "icheon": "이천시", "changjeon": "창전동", "jeungpo": "증포동", "bubal": "부발", "majung": "마장", "anheung": "안흥동",
+    "yangju": "양주시", "okjeong": "옥정동", "goeup": "고읍동", "deokgye": "덕계동", "baekseok_yangju": "백석",
+    "uiwang": "의왕시", "poil": "포일동", "naeson": "내손동", "gojeon": "고천동", "sam-dong": "삼동",
+    "anseong": "안성시", "gongdo": "공도", "daedeok": "대덕", "anseong_dong": "안성동", "boggae": "보개"
 }
-
-def get_korean_name(name):
-    clean_name = name.replace(".html", "").lower()
-    return NAME_MAP.get(clean_name, clean_name.capitalize())
-
-# ==========================================
-# 2. 하위 페이지 전용 랜덤 타이틀 템플릿 (30종)
-# ==========================================
-TITLE_TEMPLATES = [
-    "{loc} 출장 마사지 & 24시 프리미엄 홈타이 안내 | 마사지몽",
-    "{loc} 출장 마사지 추천 1위 · 24시 방문 홈케어 | 마사지몽",
-    "{loc} 24시 출장 마사지 | 아로마·스웨디시 힐링 케어 - 마사지몽",
-    "[{loc} 출장마사지] 프라이빗 1:1 방문 테라피 전문 | 마사지몽",
-    "{loc} 출장 마사지 24시간 신속 방문 홈타이 | 마사지몽",
-    "{loc} 전지역 출장 마사지 · 호텔식 프리미엄 바디 테라피 | 마사지몽",
-    "{loc} 24시 출장 마사지 & 아로마 힐링 홈케어 | 마사지몽",
-    "{loc} 출장 마사지 전문점 · 30분 내 도착 보장 안내 | 마사지몽",
-    "{loc} 출장 마사지 완벽 가이드 | 타이 & 스웨디시 - 마사지몽",
-    "{loc} 프라이빗 24시 출장 마사지 케어 추천 리스트 | 마사지몽",
-    "{loc} 출장 마사지 No.1 힐링 솔루션 | 마사지몽",
-    "{loc} 24시 출장 타이 마사지 및 아로마 테라피 안내 | 마사지몽",
-    "{loc} 출장 마사지 | 야간·새벽 신속 방문 1:1 케어 - 마사지몽",
-    "{loc} 프리미엄 24시 출장 마사지 & 홈타이 예약 | 마사지몽",
-    "{loc} 출장 마사지 추천 매장 TOP 5 비교 안내 | 마사지몽",
-    "꿈결 같은 힐링 {loc} 출장 마사지 & 방문 스파 | 마사지몽",
-    "{loc} 출장 마사지 · 100% 후불제 안심 홈케어 서비스 | 마사지몽",
-    "{loc} 24시간 언제나 빠른 출장 마사지 매칭 플랫폼 | 마사지몽",
-    "{loc} 출장 마사지 | 피로회복 딥티슈 & 림프 순환 - 마사지몽",
-    "{loc} 전문 테라피스트 출장 마사지 24시 예약 | 마사지몽",
-    "{loc} 출장 마사지 & 감성 스웨디시 방문 테라피 | 마사지몽",
-    "{loc} 24시 출장 홈타이 · 힐링 아로마 케어 안내 | 마사지몽",
-    "{loc} 출장 마사지 신속 배정 · 고객 만족 1위 - 마사지몽",
-    "{loc} 프라이빗 룸케어 출장 마사지 안내 가이드 | 마사지몽",
-    "{loc} 출장 마사지 · 24시간 전지역 신속 케어 출동 | 마사지몽",
-    "{loc} 출장 마사지 잘하는 곳 추천 & 코스 안내 | 마사지몽",
-    "{loc} 24시 1:1 맞춤 출장 마사지 테라피 | 마사지몽",
-    "{loc} 감성 아로마 출장 마사지 & 24시 홈타이 | 마사지몽",
-    "{loc} 출장 마사지 믿을 수 있는 제휴 매장 안내 | 마사지몽",
-    "{loc} 24시 출장 마사지 · 정찰제 안심 힐링 케어 | 마사지몽"
-]
-
-# ==========================================
-# 3. 하위 페이지 전용 랜덤 설명(Description) 템플릿 (30종)
-# ==========================================
-DESC_TEMPLATES = [
-    "{loc} 전지역 24시 출장 마사지 및 홈타이 전문 안내. 아로마, 스웨디시, 타이 코스를 30분 내 프라이빗하게 이용해보세요.",
-    "피로에 지친 하루, {loc} 출장 마사지 마사지몽에서 24시간 신속 방문 테라피와 1:1 맞춤형 힐링 케어를 제공합니다.",
-    "{loc} 인근 24시간 출장 마사지 추천. 검증된 전문 테라피스트의 프라이빗 아로마 및 딥티슈 힐링 코스 안내.",
-    "{loc} 출장 마사지 100% 후불제 시스템. 타이, 아로마, 림프케어 24시간 신속 방문 서비스로 피로를 날려보세요.",
-    "꿈결 같은 휴식을 선사하는 {loc} 24시 출장 마사지. 전문 관리사의 호텔식 테라피를 계신 곳에서 편안히 받아보세요.",
-    "{loc} 출장 마사지 & 홈케어 완벽 안내. 자택 및 오피스텔 어디든 30분 내 도착하는 프리미엄 방문 서비스.",
-    "{loc} 24시 출장 타이 및 스웨디시 전문점. 깨끗하고 안전한 힐링 케어 프로그램을 지금 확인해보세요.",
-    "믿고 이용하는 {loc} 출장 마사지 플랫폼 마사지몽. 철저한 위생 관리와 맞춤 테라피로 최상의 만족을 드립니다.",
-    "{loc} 전 구역 24시간 출장 마사지 빠른 배정. 아로마 오일 케어부터 건식 타이까지 취향별 코스 완비.",
-    "{loc} 직장인 피로회복을 위한 24시 출장 마사지. 전화 한 통으로 신속하게 방문하는 프리미엄 홈타이 안내.",
-    "{loc} 출장 마사지 예약 안내. 고급 천연 오일을 사용한 부드러운 스웨디시와 힐링 림프 케어 제공.",
-    "야근 후 늦은 새벽에도 이용 가능한 {loc} 24시 출장 마사지. 빠르고 프라이빗한 맞춤형 케어를 약속합니다.",
-    "{loc} 출장 마사지 검증 TOP 5 매장 소개. 합리적인 정찰제 가격과 최고의 테라피 퀄리티를 만나보세요.",
-    "{loc} 출장 마사지 & 24시 홈테라피. 숙련된 테라피스트가 선사하는 수준 높은 바디 릴렉싱 프로그램.",
-    "{loc} 지역 어디서나 20~30분 내 방문하는 출장 마사지. 내 집에서 편안하게 즐기는 프리미엄 스파 케어.",
-    "{loc} 출장 마사지 전문 가이드. 타이, 아로마, 스페셜 콤보 코스 등 다양한 힐링 패키지 안내.",
-    "{loc} 24시간 운영되는 믿을 수 있는 출장 마사지. 프라이빗한 공간에서 누리는 극상의 힐링 타임.",
-    "{loc} 출장 마사지 마사지몽 추천 제휴점 안내. 정직한 가격과 친절한 서비스로 고객 감동을 실현합니다.",
-    "지친 몸과 마음에 활력을 주는 {loc} 24시 출장 마사지. 맞춤 테라피스트 배정으로 신속한 방문 지원.",
-    "{loc} 출장 마사지 및 홈타이 실시간 안내. 언제 어디서나 편안하게 이용하는 1:1 방문 바디 케어.",
-    "{loc} 24시 출장 마사지 서비스. 꼼꼼한 압 조절과 부드러운 아로마 릴렉싱으로 피로를 완벽하게 해소하세요.",
-    "{loc} 출장 마사지 신속 매칭. 번거로운 이동 없이 자택에서 즐기는 최고급 호텔식 바디 테라피.",
-    "{loc} 지역 맞춤 24시 출장 마사지 코스 안내. 건식 타이부터 습식 오일 테라피까지 완벽 준비.",
-    "{loc} 출장 마사지 대표 브랜드 마사지몽. 서울 전 지역 신속 네트워크로 가장 빠른 방문을 약속합니다.",
-    "{loc} 24시간 출장 마사지 및 림프 순환 케어. 전문 관리사의 세심한 손길로 전신 피로를 풀어보세요.",
-    "{loc} 출장 마사지 안심 예약 센터. 선입금 없는 안전한 현장 결제 시스템으로 편안하게 이용하세요.",
-    "{loc} 전역 24시 출장 홈타이 안내. 고객 만족을 최우선으로 하는 친절하고 품격 있는 바디 힐링.",
-    "{loc} 출장 마사지 특별 코스. 뭉친 근육을 시원하게 풀어주는 딥티슈 & 전신 스트레칭 프로그램.",
-    "{loc} 24시간 1:1 맞춤 출장 마사지. 바쁜 현대인을 위한 가장 빠르고 안락한 홈케어 솔루션.",
-    "{loc} 출장 마사지 추천 코스 완벽 정리. 마사지몽에서 지금 바로 가까운 전문 테라피를 만나보세요."
-]
-
-# ==========================================
-# 4. 하위 페이지 전용 랜덤 키워드 템플릿 (30종)
-# ==========================================
-KEYWORD_TEMPLATES = [
-    "{loc} 출장 마사지, {loc} 출장, {loc} 홈타이, {loc} 24시 마사지, {loc} 방문 테라피",
-    "{loc} 출장 마사지, {loc} 스웨디시, {loc} 아로마 테라피, {loc} 24시 홈케어",
-    "{loc} 홈타이, {loc} 출장마사지, {loc} 24시간 마사지, {loc} 1인샵 테라피",
-    "{loc} 출장 마사지 추천, {loc} 방문 마사지, {loc} 타이 마사지, {loc} 힐링 테라피",
-    "{loc} 24시 출장 마사지, {loc} 홈타이 예약, {loc} 아로마 케어, {loc} 림프 마사지",
-    "{loc} 출장 마사지 가격, {loc} 출장 안마, {loc} 스웨디시 홈케어, {loc} 24시 테라피",
-    "{loc} 출장 마사지 후기, {loc} 홈타이 추천, {loc} 24시 출장, {loc} 방문 홈케어",
-    "{loc} 출장 마사지 빠른곳, {loc} 24시 타이, {loc} 아로마 마사지, {loc} 스파 테라피",
-    "{loc} 출장 마사지 24시, {loc} 홈타이 전문, {loc} 호텔식 테라피, {loc} 1:1 바디케어",
-    "{loc} 출장 마사지, {loc} 24시 홈타이, {loc} 방문 테라피스트, {loc} 전신 마사지",
-    "{loc} 홈케어 출장, {loc} 출장 마사지 예약, {loc} 24시간 방문, {loc} 감성 테라피",
-    "{loc} 출장 마사지 코스, {loc} 타이 홈타이, {loc} 아로마 릴렉싱, {loc} 24시 케어",
-    "{loc} 출장 마사지, {loc} 24시 스웨디시, {loc} 방문 타이, {loc} 피로회복 마사지",
-    "{loc} 홈타이 24시, {loc} 출장 마사지 후불제, {loc} 힐링 홈케어, {loc} 바디 테라피",
-    "{loc} 출장 마사지 안내, {loc} 홈케어 마사지, {loc} 24시 아로마, {loc} 스웨디시",
-    "{loc} 방문 출장 마사지, {loc} 24시 홈타이 추천, {loc} 딥티슈 테라피, {loc} 힐링",
-    "{loc} 출장 마사지 순위, {loc} 타이 마사지 출장, {loc} 24시간 홈케어, {loc} 스파",
-    "{loc} 24시 출장 안마, {loc} 출장 마사지 업체, {loc} 홈타이 빠른도착, {loc} 테라피",
-    "{loc} 출장 마사지 할인, {loc} 24시 방문 케어, {loc} 아로마 스웨디시, {loc} 홈타이",
-    "{loc} 프리미엄 출장 마사지, {loc} 24시 홈타이, {loc} 1:1 방문 테라피, {loc} 마사지몽",
-    "{loc} 출장 마사지, {loc} 24시 방문 마사지, {loc} 감성 아로마, {loc} 림프 순환",
-    "{loc} 홈타이 출장, {loc} 출장 마사지 잘하는곳, {loc} 24시 홈케어 플랫폼",
-    "{loc} 출장 마사지, {loc} 타이 출장, {loc} 스웨디시 방문, {loc} 24시간 테라피",
-    "{loc} 24시 출장 마사지 추천, {loc} 홈케어 아로마, {loc} 1인 테라피, {loc} 출장",
-    "{loc} 출장 마사지, {loc} 24시 출장 홈타이, {loc} 방문 릴렉싱, {loc} 바디 케어",
-    "{loc} 홈타이 예약, {loc} 출장 마사지 24시, {loc} 스웨디시 테라피, {loc} 안마",
-    "{loc} 출장 마사지, {loc} 24시간 방문 스파, {loc} 아로마 오일 케어, {loc} 홈케어",
-    "{loc} 출장 마사지 전문, {loc} 24시 홈타이 도착, {loc} 프리미엄 테라피",
-    "{loc} 방문 출장 마사지, {loc} 24시 아로마 힐링, {loc} 스웨디시 홈케어",
-    "{loc} 출장 마사지, {loc} 홈타이 출장 24시, {loc} 1:1 맞춤 방문 바디 테라피"
-]
-
-# ==========================================
-# 5. 파일 순회 및 일괄 치환 실행
-# ==========================================
-count = 0
-
-for root, dirs, files in os.walk("."):
-    for file in files:
-        if not file.endswith(".html"):
-            continue
-        
-        file_path = os.path.join(root, file)
-        rel_path = os.path.relpath(file_path, ".").replace("\\", "/")
-        path_parts = rel_path.split("/")
-
-        with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read()
-
-        # ----------------------------------------------------
-        # 1) 메인 루트 페이지 (index.html) -> '출장마사지' 키워드 철저 제외
-        # ----------------------------------------------------
-        if rel_path == "index.html":
-            new_title = "마사지몽 | 서울 24시 프리미엄 힐링 테라피 & 홈케어 예약 플랫폼"
-            new_desc = "꿈결 같은 일상의 쉼표 마사지몽! 서울 전 지역 24시 프리미엄 바디케어 & 힐링 테라피 전문 플랫폼. 아로마, 스웨디시, 타이 1:1 맞춤 케어 코스 안내."
-            new_keywords = "마사지몽, 서울 테라피, 서울 홈케어, 강남 스파, 서초 테라피, 송파 힐링케어, 24시 바디케어, 프리미엄 스웨디시"
-            new_og_title = "마사지몽 | 서울 24시 프리미엄 바디 테라피 & 힐링 케어"
-            new_h1 = "마사지몽 <span>24시 프리미엄 홈케어 & 테라피 안내</span>"
-
-        # ----------------------------------------------------
-        # 2) 하위 페이지 (구/동 페이지) -> 30가지 템플릿 중 랜덤 조합
-        # ----------------------------------------------------
-        else:
-            # 구 이름 및 동 이름 추출
-            if len(path_parts) == 2 and path_parts[1] == "index.html":
-                # 구 메인 (예: nowon/index.html)
-                loc_name = get_korean_name(path_parts[0])
-            else:
-                # 동 세부 (예: nowon/gongneung.html)
-                gu_name = get_korean_name(path_parts[0]) if len(path_parts) > 1 else ""
-                dong_name = get_korean_name(path_parts[-1])
-                loc_name = f"{gu_name} {dong_name}" if gu_name else dong_name
-
-            # 30가지 템플릿에서 각각 무작위 선택
-            t_sample = random.choice(TITLE_TEMPLATES)
-            d_sample = random.choice(DESC_TEMPLATES)
-            k_sample = random.choice(KEYWORD_TEMPLATES)
-
-            new_title = t_sample.format(loc=loc_name)
-            new_desc = d_sample.format(loc=loc_name)
-            new_keywords = k_sample.format(loc=loc_name)
-            new_og_title = f"{loc_name} 출장 마사지 & 24시 프리미엄 홈케어 | 마사지몽"
-            new_h1 = f"{loc_name} 출장 마사지 <span>프리미엄 24시 방문 케어</span>"
-
-        # ----------------------------------------------------
-        # 정규표현식을 이용한 태그별 완벽 치환
-        # ----------------------------------------------------
-        # 1. <title>
-        content = re.sub(r'<title>.*?</title>', f'<title>{new_title}</title>', content, flags=re.DOTALL)
-        
-        # 2. <meta name="description">
-        content = re.sub(r'<meta\s+name=["\']description["\']\s+content=["\'].*?["\']\s*/?>', 
-                         f'<meta name="description" content="{new_desc}">', content, flags=re.DOTALL)
-        
-        # 3. <meta name="keywords">
-        if '<meta name="keywords"' in content or "<meta name='keywords'" in content:
-            content = re.sub(r'<meta\s+name=["\']keywords["\']\s+content=["\'].*?["\']\s*/?>', 
-                             f'<meta name="keywords" content="{new_keywords}">', content, flags=re.DOTALL)
-        else:
-            # keywords 태그가 없으면 description 뒤에 자동 삽입
-            content = re.sub(r'(<meta\s+name=["\']description["\'].*?>)', 
-                             rf'\1\n    <meta name="keywords" content="{new_keywords}">', content, flags=re.DOTALL)
-        
-        # 4. Open Graph <meta property="og:title">
-        if 'property="og:title"' in content or "property='og:title'" in content:
-            content = re.sub(r'<meta\s+property=["\']og:title["\']\s+content=["\'].*?["\']\s*/?>', 
-                             f'<meta property="og:title" content="{new_og_title}">', content, flags=re.DOTALL)
-
-        # 5. 헤더 <h1> 텍스트도 동적으로 깔끔하게 동기화
-        content = re.sub(r'<h1>.*?</h1>', f'<h1>{new_h1}</h1>', content, flags=re.DOTALL)
-
-        # 파일 저장
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write(content)
-
-        count += 1
-        print(f"✔ [{loc_name if rel_path != 'index.html' else '메인'}] -> {new_title}")
-
-print(f"\n🎉 작업 완료! 총 {count}개 페이지의 메타태그와 타이틀이 30개 패턴으로 자연스럽게 랜덤 분산 적용되었습니다.")

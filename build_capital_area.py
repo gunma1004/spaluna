@@ -97,7 +97,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <div class="vendor-header">
                     <div>
                         <span class="vendor-badge">추천 01</span>
-                        <span class="vendor-title">마사지몽 프리미엄 케어</span>
+                        <span class="vendor-title">스파루나 프리미엄 케어</span>
                     </div>
                     <div class="vendor-tagline">★ {header_title} 전 지역 신속 배정</div>
                 </div>
@@ -130,7 +130,7 @@ for folder, (kr_name, sub_dongs) in NEW_REGIONS.items():
     index_path = os.path.join(folder, "index.html")
     with open(index_path, "w", encoding="utf-8") as f:
         f.write(HTML_TEMPLATE.format(
-            title=f"{kr_name} 출장 마사지 & 24시 프리미엄 홈타이 | 마사지몽",
+            title=f"{kr_name} 출장 마사지 & 24시 프리미엄 홈타이 | 스파루나",
             desc=f"{kr_name} 전 지역 24시 출장 마사지 및 홈타이 추천. 아로마, 스웨디시 힐링 케어 안내.",
             keywords=f"{kr_name} 출장 마사지, {kr_name} 홈타이, 24시 테라피",
             header_title=kr_name
@@ -142,7 +142,7 @@ for folder, (kr_name, sub_dongs) in NEW_REGIONS.items():
         dong_path = os.path.join(folder, f"{dong}.html")
         with open(dong_path, "w", encoding="utf-8") as f:
             f.write(HTML_TEMPLATE.format(
-                title=f"{kr_name} 출장 마사지 & 24시 홈타이 | 마사지몽",
+                title=f"{kr_name} 출장 마사지 & 24시 홈타이 | 스파루나",
                 desc=f"{kr_name} 인근 24시간 신속 방문 힐링 테라피 안내.",
                 keywords=f"{kr_name} 출장 마사지, {kr_name} 홈케어",
                 header_title=f"{kr_name}"
