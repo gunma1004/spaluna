@@ -1,0 +1,252 @@
+﻿import os
+
+DETAILED_REGIONS = {
+    "incheon_bupyeong": ("인천 부평구", ["bupyeong", "sanggok", "cheongcheon", "galsan", "sipjeong", "bugae", "samsan"]),
+    "incheon_namdong": ("인천 남동구", ["guwol", "ganseok", "mansu", "nonhyeon_incheon", "seochang", "dorim"]),
+    "incheon_yeonsu": ("인천 연수구", ["songdo", "yeonsu", "dongchun", "cheonghak", "okryeon", "seonhak"]),
+    "incheon_michuhol": ("인천 미추홀구", ["juan", "yonghyeon", "hakik", "dohwa", "sungui", "gwangyo"]),
+    "incheon_seogu": ("인천 서구", ["cheongna", "geomdan", "luwon", "gajeong", "seoknam", "yeonhui", "dangha", "majeon"]),
+    "incheon_gyeyang": ("인천 계양구", ["gyeyang", "jakjeon", "hyoseong", "gyesan", "seoun"]),
+    "incheon_junggu": ("인천 중구", ["yeongjong", "unseo", "jungsan", "sinpo", "dongincheon"]),
+    "incheon_donggu": ("인천 동구", ["songhyeon", "songrim", "manseok", "hwasu"]),
+    "suwon_paldal": ("수원 팔달구", ["ingye", "haenggung", "hwaseo", "ji-dong", "maesan"]),
+    "suwon_yeongtong": ("수원 영통구", ["gwanggyo", "yeongtong", "mangpo", "maetan", "woncheon"]),
+    "suwon_jangan": ("수원 장안구", ["jeongja", "jo-won", "yuljeon", "cheoncheon", "yeonmu"]),
+    "suwon_gwonseon": ("수원 권선구", ["gwonseon", "gosaek", "homaesil", "seriu", "geumgok"]),
+    "seongnam_bundang": ("성남 분당구", ["seohyeon", "yatap", "jeongja", "pangyo", "baekhyeon", "sunae", "ime", "gumi", "unjoong"]),
+    "seongnam_sujeong": ("성남 수정구", ["wirye", "sinheung", "taepyeong", "sanseong", "bokjeong", "sujin"]),
+    "seongnam_jungwon": ("성남 중원구", ["moran", "seongnam_dong", "sangdaewon", "hagdaewon", "geumgwang", "bank"]),
+    "goyang_ilsandong": ("고양 일산동구", ["baekseok", "madu", "janghang", "jeongbalsan", "siksa", "pungsan"]),
+    "goyang_ilsanseo": ("고양 일산서구", ["juyeop", "daehwa", "tanhyun", "ilsan", "songsan", "deogi"]),
+    "goyang_deogyang": ("고양 덕양구", ["hwajeong", "haengsin", "samsong", "wonheung", "hyangdong", "deogeun", "wondang"]),
+    "yongin_suji": ("용인 수지구", ["pungdeokcheon", "jookjeon", "dongcheon", "sanghyeon", "shinbong", "sungbok"]),
+    "yongin_giheung": ("용인 기흥구", ["dongbaek", "singal", "gugal", "bora", "seonong", "guseong", "mabuk"]),
+    "yongin_cheoin": ("용인 처인구", ["kimryangjang", "yeokbuk", "samga", "pogok", "mohan", "yangji"]),
+    "anyang_dongan": ("안양 동안구", ["pyeongchon", "beomgye", "indeogwon", "gwanyang", "hogye", "bisan"]),
+    "anyang_manan": ("안양 만안구", ["anyang_dong", "seoksu", "bakdal"]),
+    "ansan_danwon": ("안산 단원구", ["gojan", "jungang", "chogi", "wongok", "seonbu", "daebu"]),
+    "ansan_sangnok": ("안산 상록구", ["bono", "sadong", "wolpi", "seongpo", "il-dong", "i-dong"]),
+    "bucheon": ("부천시", ["jungdong", "sangdong", "sinjungdong", "sosa", "wonmi", "ojeong", "yeokgok", "gogang"]),
+    "hwaseong": ("화성시", ["dongtan", "dongtan2", "byeongjeom", "hyangnam", "bongdam", "namyang", "saesol", "jinjoo"]),
+    "pyeongtaek": ("평택시", ["godeok", "bijeon", "songtan", "anjeong", "anseok", "poseung", "cheongbuk", "sejeong"]),
+    "siheung": ("시흥시", ["baegot", "jeongwang", "eunhaeng", "mokgam", "daeya", "sinhyeon", "neunggok", "janghyeon"]),
+    "gimpo": ("김포시", ["gurae", "unyang", "janggi", "pungmu", "sau", "masan", "gochon", "tongjin"]),
+    "paju": ("파주시", ["unjeong", "geumchon", "munsan", "gyoha", "yadang", "dongpae"]),
+    "namyangju": ("남양주시", ["dasang", "byeolnae", "pyeongnae", "hopyeong", "jinjeop", "wabu", "onam", "hwado"]),
+    "uijeongbu": ("의정부시", ["uijeongbu_dong", "howon", "singok", "minrak", "gosan", "ganeung", "geumo"]),
+    "hanam": ("하남시", ["misa", "wirye_hanam", "gamil", "deokpung", "sinjang", "pungcheon"]),
+    "gwangmyeong": ("광명시", ["cheolsan", "gwangmyeong_dong", "soha", "iljik", "haan"]),
+    "gunpo": ("군포시", ["sanbon", "geumjeong", "dang-dong", "daeyami", "bugok"]),
+    "guri": ("구리시", ["sutaek", "inmae", "galmae", "gyomun", "achasan"]),
+    "osan": ("오산시", ["won-dong", "seggyo", "gweol", "osandong", "eunjeong"]),
+    "gwangju_gyeonggi": ("경기 광주시", ["gyeongan", "taejeon", "opocheup", "sinhyun", "neungpyeong", "tanbeol"]),
+    "icheon": ("이천시", ["창전동", "증포동", "부발", "마장", "안흥동"]),
+    "yangju": ("양주시", ["okjeong", "goeup", "deokgye", "baekseok_yangju"]),
+    "uiwang": ("의왕시", ["poil", "naeson", "gojeon", "sam-dong"]),
+    "anseong": ("안성시", ["gongdo", "daedeok", "anseong_dong", "boggae"])
+}
+
+FIVE_VENDOR_TEMPLATE = """<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title}</title>
+    <meta name="description" content="{desc}">
+    <meta name="keywords" content="{keywords}">
+    <meta name="robots" content="index, follow">
+    <style>
+        * {{ margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Sans KR', -apple-system, sans-serif; }}
+        body {{ background-color: #0f1117; color: #e1e3e8; line-height: 1.6; padding-bottom: 40px; }}
+        a {{ text-decoration: none; color: inherit; }}
+        header {{ background: #161821; padding: 18px 20px; text-align: center; border-bottom: 2px solid #e74c3c; position: sticky; top: 0; z-index: 100; }}
+        header h1 {{ font-size: 1.35rem; color: #ffffff; font-weight: 700; }}
+        header h1 span {{ color: #e74c3c; }}
+        .hero-banner {{ background: linear-gradient(rgba(15, 17, 23, 0.75), rgba(15, 17, 23, 0.88)), url('/images/main-banner.jpg') center/cover; padding: 50px 20px; text-align: center; border-bottom: 1px solid #2a2d37; }}
+        .hero-banner h2 {{ font-size: 1.6rem; color: #fff; margin-bottom: 10px; }}
+        .hero-banner p {{ font-size: 0.95rem; color: #f1c40f; }}
+        .container {{ max-width: 900px; margin: 0 auto; padding: 20px 15px; }}
+        .nav-bar {{ display: flex; gap: 10px; margin-bottom: 20px; }}
+        .home-btn {{ background: #2a2d37; color: #fff; padding: 8px 15px; border-radius: 5px; font-size: 0.85rem; }}
+        .section-title {{ font-size: 1.25rem; color: #ffffff; margin: 25px 0 18px 0; border-left: 4px solid #e74c3c; padding-left: 10px; font-weight: 700; }}
+        .vendor-card {{ background: #161821; border: 1px solid #2a2d37; border-radius: 12px; overflow: hidden; margin-bottom: 25px; }}
+        .vendor-img {{ width: 100%; height: 220px; object-fit: cover; }}
+        .vendor-body {{ padding: 20px; }}
+        .vendor-header {{ display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2a2d37; padding-bottom: 12px; margin-bottom: 15px; flex-wrap: wrap; gap: 8px; }}
+        .vendor-badge {{ background: #e74c3c; color: #fff; font-size: 0.8rem; font-weight: bold; padding: 4px 10px; border-radius: 4px; }}
+        .vendor-badge.gold {{ background: #f39c12; }}
+        .vendor-badge.blue {{ background: #3498db; }}
+        .vendor-badge.purple {{ background: #9b59b6; }}
+        .vendor-badge.green {{ background: #27ae60; }}
+        .vendor-title {{ font-size: 1.2rem; color: #ffffff; font-weight: bold; }}
+        .vendor-tagline {{ color: #2ecc71; font-size: 0.88rem; font-weight: 600; width: 100%; margin-top: 4px; }}
+        .vendor-info {{ margin-bottom: 18px; }}
+        .info-row {{ display: flex; margin-bottom: 8px; font-size: 0.92rem; }}
+        .info-label {{ width: 95px; color: #f1c40f; font-weight: bold; flex-shrink: 0; }}
+        .info-content {{ color: #bbbfca; }}
+        .vendor-call-btn {{ display: block; text-align: center; background: linear-gradient(135deg, #e74c3c, #c0392b); color: #ffffff; font-weight: bold; padding: 13px; border-radius: 8px; font-size: 1rem; }}
+        footer {{ text-align: center; padding: 25px 20px; font-size: 0.8rem; color: #7f8c8d; border-top: 1px solid #2a2d37; margin-top: 20px; }}
+    </style>
+</head>
+<body>
+    <header>
+        <h1>{header_title} <span>프리미엄 24시 방문 케어</span></h1>
+    </header>
+    <div class="hero-banner">
+        <h2>{header_title} 맞춤 프라이빗 힐링 서비스</h2>
+        <p>계신 곳 어디든 30분 내 신속 방문 테라피 안내</p>
+    </div>
+    <div class="container">
+        <div class="nav-bar">
+            <a href="../index.html" class="home-btn">🏠 전체 메인</a>
+            <a href="index.html" class="home-btn">📍 {header_title} 메인</a>
+        </div>
+        <h2 class="section-title">{header_title} 추천 테라피 매장 TOP 5</h2>
+        <div class="vendor-card">
+            <img src="/images/vendor1.jpg" alt="{header_title} 테라피" class="vendor-img">
+            <div class="vendor-body">
+                <div class="vendor-header">
+                    <div>
+                        <span class="vendor-badge">추천 01</span>
+                        <span class="vendor-title">스파루나 프리미엄 홈케어</span>
+                    </div>
+                    <div class="vendor-tagline">★ {header_title} 전 지역 30분 내 신속 방문 보장</div>
+                </div>
+                <div class="vendor-info">
+                    <div class="info-row">
+                        <div class="info-label">제공 코스</div>
+                        <div class="info-content">시그니처 건식 타이, 감성 아로마 릴렉싱, 딥티슈 집중 케어</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">매장 특징</div>
+                        <div class="info-content">24시간 연중무휴, 100% 후불제 안심 결제, 1회용 청결 위생용품 완비</div>
+                    </div>
+                </div>
+                <a href="tel:0507-1280-3338" class="vendor-call-btn">📞 전화 문의 : 0507-1280-3338</a>
+            </div>
+        </div>
+        <div class="vendor-card">
+            <img src="/images/vendor2.jpg" alt="{header_title} 스웨디시" class="vendor-img">
+            <div class="vendor-body">
+                <div class="vendor-header">
+                    <div>
+                        <span class="vendor-badge gold">추천 02</span>
+                        <span class="vendor-title">루나 VIP 프라이빗 바디 테라피</span>
+                    </div>
+                    <div class="vendor-tagline">★ 호텔식 최고급 에센셜 오일 & 림프 순환 케어</div>
+                </div>
+                <div class="vendor-info">
+                    <div class="info-row">
+                        <div class="info-label">제공 코스</div>
+                        <div class="info-content">프리미엄 스웨디시, 림프 드레니쉬, 전신 바디 밸런싱 케어</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">매장 특징</div>
+                        <div class="info-content">철저한 1:1 맞춤 테라피, 단골 고객 재이용률 1위 검증 매장</div>
+                    </div>
+                </div>
+                <a href="tel:0507-1280-3338" class="vendor-call-btn">📞 전화 문의 : 0507-1280-3338</a>
+            </div>
+        </div>
+        <div class="vendor-card">
+            <img src="/images/vendor3.jpg" alt="{header_title} 홈타이" class="vendor-img">
+            <div class="vendor-body">
+                <div class="vendor-header">
+                    <div>
+                        <span class="vendor-badge blue">추천 03</span>
+                        <span class="vendor-title">달빛 힐링 아로마 테라피</span>
+                    </div>
+                    <div class="vendor-tagline">★ 야간·새벽 직장인 맞춤 힐링 & 스트레스 완화</div>
+                </div>
+                <div class="vendor-info">
+                    <div class="info-row">
+                        <div class="info-label">제공 코스</div>
+                        <div class="info-content">타이 + 아로마 스페셜 콤보 코스 (90분/120분)</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">매장 특징</div>
+                        <div class="info-content">투명한 정찰제 요금 운영, 친절한 베테랑 관리사 상시 대기</div>
+                    </div>
+                </div>
+                <a href="tel:0507-1280-3338" class="vendor-call-btn">📞 전화 문의 : 0507-1280-3338</a>
+            </div>
+        </div>
+        <div class="vendor-card">
+            <img src="/images/vendor4.jpg" alt="{header_title} 감성 테라피" class="vendor-img">
+            <div class="vendor-body">
+                <div class="vendor-header">
+                    <div>
+                        <span class="vendor-badge purple">추천 04</span>
+                        <span class="vendor-title">힐링터치 감성 에스테틱</span>
+                    </div>
+                    <div class="vendor-tagline">★ 섬세한 압 조절과 전신 림프 부종 케어 전문</div>
+                </div>
+                <div class="vendor-info">
+                    <div class="info-row">
+                        <div class="info-label">제공 코스</div>
+                        <div class="info-content">감성 로드 스웨디시, 전신 릴렉싱 스트레칭, 스페셜 풋 케어</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">매장 특징</div>
+                        <div class="info-content">여성·남성 고객 맞춤 압 조절, 2030 인기 감성 힐링 샵</div>
+                    </div>
+                </div>
+                <a href="tel:0507-1280-3338" class="vendor-call-btn">📞 전화 문의 : 0507-1280-3338</a>
+            </div>
+        </div>
+        <div class="vendor-card">
+            <img src="/images/vendor5.jpg" alt="{header_title} 출장 마사지" class="vendor-img">
+            <div class="vendor-body">
+                <div class="vendor-header">
+                    <div>
+                        <span class="vendor-badge green">추천 05</span>
+                        <span class="vendor-title">24시 명품 전통 홈타이</span>
+                    </div>
+                    <div class="vendor-tagline">★ 뭉친 근육을 시원하게 풀어주는 정통 건식 테라피</div>
+                </div>
+                <div class="vendor-info">
+                    <div class="info-row">
+                        <div class="info-label">제공 코스</div>
+                        <div class="info-content">오리지널 정통 타이, 등/어깨 집중 케어, 전신 아로마 힐링</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">매장 특징</div>
+                        <div class="info-content">선입금 없는 100% 현장 결제, 신속한 실시간 배차 시스템</div>
+                    </div>
+                </div>
+                <a href="tel:0507-1280-3338" class="vendor-call-btn">📞 전화 문의 : 0507-1280-3338</a>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>© {header_title} 프리미엄 테라피 안내. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+"""
+
+count = 0
+for folder, (kr_name, sub_dongs) in DETAILED_REGIONS.items():
+    os.makedirs(folder, exist_ok=True)
+    index_path = os.path.join(folder, "index.html")
+    with open(index_path, "w", encoding="utf-8") as f:
+        f.write(FIVE_VENDOR_TEMPLATE.format(
+            title=f"{kr_name} 출장 마사지 & 24시 프리미엄 홈타이",
+            desc=f"{kr_name} 전 지역 24시 출장 마사지 및 홈타이 추천 TOP 5 매장 안내.",
+            keywords=f"{kr_name} 출장 마사지, {kr_name} 홈타이",
+            header_title=kr_name
+        ))
+    count += 1
+
+    for dong in sub_dongs:
+        dong_path = os.path.join(folder, f"{dong}.html")
+        with open(dong_path, "w", encoding="utf-8") as f:
+            f.write(FIVE_VENDOR_TEMPLATE.format(
+                title=f"{kr_name} 출장 마사지 & 24시 홈타이",
+                desc=f"{kr_name} 인근 24시간 신속 방문 힐링 테라피 추천 매장 안내.",
+                keywords=f"{kr_name} 출장 마사지, {kr_name} 홈케어",
+                header_title=f"{kr_name}"
+            ))
+        count += 1
+
+print(f"🎉 경기/인천 총 {count}개 페이지의 업체 카드가 5개(TOP 5)로 완벽하게 갱신되었습니다.")
